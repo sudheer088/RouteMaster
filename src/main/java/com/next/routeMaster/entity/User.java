@@ -3,18 +3,20 @@ package com.next.routeMaster.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="user")
+@Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true,nullable = false)
+
+    @Column(nullable = false, unique = true)
     private String username;
-    @Column(nullable=false)
+
+    @Column(nullable = false)
     private String password;
 
-    public User() {
-    }
+    public User() {}
 
     public User(String username, String password) {
         this.username = username;
