@@ -22,7 +22,7 @@ public class RouteAssignmentService {
         this.studentRepo = studentRepo;
     }
     public RouteAssignment assignStudent(Long routeId,Long studentId){
-        if(routeAssaignRepo.existByRouteIdAndStudentId(routeId,studentId)){
+        if(routeAssaignRepo.existsByRouteIdAndStudentId(routeId,studentId)){
             throw new RuntimeException("student already assaigned to this route");
         }
         Route route= routeRepo.findById(routeId).orElseThrow(()->new RuntimeException("route not found"));

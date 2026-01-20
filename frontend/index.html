@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RouteMaster</title>
+<link rel="stylesheet" href="RouteMaster.css">
+</head>
+<body>
+
+<div class="header">
+    <h1>RouteMaster</h1>
+    <button id="logoutBtn" onclick="logout()">Logout</button>
+</div>
+<div id="response"></div>
+
+<hr>
+
+<button class="toggle-btn" onclick="toggle('regSection')">Register</button>
+<div id="regSection" class="content-section">
+    <input type="text" id="regUsername" placeholder="Username">
+    <input type="password" id="regPassword" placeholder="Password">
+    <button onclick="register()">Signup</button>
+</div>
+
+<button class="toggle-btn" onclick="toggle('loginSection')">Login</button>
+<div id="loginSection" class="content-section">
+    <input type="text" id="loginUsername" placeholder="Username">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="login()">Login</button>
+</div>
+
+<hr>
+
+<button class="toggle-btn protected" onclick="toggle('createStudentSection')">Create Student</button>
+<div id="createStudentSection" class="content-section">
+    <input type="text" id="createStudentName" placeholder="Name">
+    <input type="text" id="createStudentGrade" placeholder="Grade">
+    <input type="text" id="createStudentParentNumber" placeholder="Parent Number" maxlength="10">
+    <button onclick="createStudent()">Submit</button>
+    <div id="createStudentResponse" class="response-box"></div>
+</div>
+
+<button class="toggle-btn protected" onclick="toggle('getAllStudentsSection')">Get All Students</button>
+<div id="getAllStudentsSection" class="content-section">
+    <button onclick="getAllStudents()">Get Students</button>
+    <div id="allStudentsResponse" class="response-box"></div>
+</div>
+
+<button class="toggle-btn protected" onclick="toggle('createRouteSection')">Create Route</button>
+<div id="createRouteSection" class="content-section">
+    <input type="text" id="createRouteName" placeholder="Route Name">
+    <input type="text" id="createRouteStart" placeholder="Start Point">
+    <input type="text" id="createRouteEnd" placeholder="End Point">
+    <select id="createRouteStatus">
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="INACTIVE">INACTIVE</option>
+    </select>
+    <button onclick="createRoute()">Submit</button>
+    <div id="createRouteResponse" class="response-box"></div>
+</div>
+
+<button class="toggle-btn protected" onclick="toggle('updateRouteStatusSection')">Update Route Status</button>
+<div id="updateRouteStatusSection" class="content-section">
+    <input type="number" id="updateRouteId" placeholder="Route ID">
+    <select id="updateStatus">
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="INACTIVE">INACTIVE</option>
+    </select>
+    <button onclick="updateRouteStatus()">Update</button>
+    <div id="updateRouteResponse" class="response-box"></div>
+</div>
+
+<button class="toggle-btn protected" onclick="toggle('getRouteStatusSection')">Get Route Status</button>
+<div id="getRouteStatusSection" class="content-section">
+    <input type="number" id="getStatusRouteId" placeholder="Route ID">
+    <button onclick="getRouteStatus()">Get Status</button>
+    <div id="routeStatusResponse" class="response-box"></div>
+</div>
+
+<button class="toggle-btn protected" onclick="toggle('addVehicleSection')">Add Vehicle</button>
+<div id="addVehicleSection" class="content-section">
+    <input type="text" id="vehicleNumber" placeholder="Vehicle Number">
+    <input type="number" id="vehicleCapacity" placeholder="Capacity">
+    <input type="text" id="vehicleDriverName" placeholder="Driver Name">
+    <input type="number" id="vehicleRouteId" placeholder="Route ID">
+    <button onclick="addVehicle()">Submit</button>
+    <div id="addVehicleResponse" class="response-box"></div>
+</div>
+
+<button class="toggle-btn protected" onclick="toggle('getVehiclesByRouteSection')">Get Vehicles by Route</button>
+<div id="getVehiclesByRouteSection" class="content-section">
+    <input type="number" id="vehiclesRouteId" placeholder="Route ID">
+    <button onclick="getVehiclesByRoute()">Get Vehicles</button>
+    <div id="vehiclesByRouteResponse" class="response-box"></div>
+</div>
+
+<button class="toggle-btn protected" onclick="toggle('assignStudentSection')">Assign Student to Route</button>
+<div id="assignStudentSection" class="content-section">
+    <input type="number" id="assignRouteId" placeholder="Route ID">
+    <input type="number" id="assignStudentId" placeholder="Student ID">
+    <button onclick="assignStudent()">Assign</button>
+    <div id="assignStudentResponse" class="response-box"></div>
+</div>
+
+<button class="toggle-btn protected" onclick="toggle('getStudentsByRouteSection')">Get Students by Route</button>
+<div id="getStudentsByRouteSection" class="content-section">
+    <input type="number" id="studentsRouteId" placeholder="Route ID">
+    <button onclick="getStudentsByRoute()">Get Students</button>
+    <div id="studentsByRouteResponse" class="response-box"></div>
+</div>
+
+<script src="RouteMaster.js"></script>
+
+</body>
+</html>

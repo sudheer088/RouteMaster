@@ -11,10 +11,10 @@ public class Route {
     @Column(nullable = false)
     private String route_name;
     @Column(nullable = false)
-    private String Start;
+    private String start;
     @Column(nullable=false)
     private String end;
-    @Column(nullable=false)
+    @Column( nullable=false)
     private String status;
 
     public Route() {
@@ -22,7 +22,7 @@ public class Route {
 
     public Route(String route_name, String start, String end, String status) {
         this.route_name = route_name;
-        this.Start = start;
+        this.start = start;
         this.end = end;
         this.status = status;
     }
@@ -40,11 +40,11 @@ public class Route {
     }
 
     public String getStart() {
-        return Start;
+        return start;
     }
 
     public void setStart(String start) {
-        Start = start;
+        start = start;
     }
 
     public String getEnd() {

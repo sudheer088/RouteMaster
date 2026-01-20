@@ -2,14 +2,14 @@ package com.next.routeMaster.service;
 
 import com.next.routeMaster.entity.User;
 import com.next.routeMaster.repository.UserRepo;
-import com.next.routeMaster.util.PasswordEncoderUtil;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    private PasswordEncoderUtil passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     private UserRepo userRepo;
-    public UserService(UserRepo userRepo,PasswordEncoderUtil passwordEncoder){
+    public UserService(UserRepo userRepo,PasswordEncoder passwordEncoder){
         this.userRepo=userRepo;
         this.passwordEncoder=passwordEncoder;
     }

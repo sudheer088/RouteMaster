@@ -8,10 +8,8 @@ public class RouteAssignment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "route_id")
     private Route route;
     @ManyToOne
-    @JoinColumn(name = "student_id")
     private Student student;
 
     public RouteAssignment() {

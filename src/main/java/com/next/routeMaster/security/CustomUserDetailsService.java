@@ -1,7 +1,7 @@
 package com.next.routeMaster.security;
 
-import org.example.feemanagementsystem.domain.entity.User;
-import org.example.feemanagementsystem.repository.UserRepository;
+import com.next.routeMaster.entity.User;
+import com.next.routeMaster.repository.UserRepo;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final UserRepo userRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
+    public CustomUserDetailsService(UserRepo userRepository) {
         this.userRepository = userRepository;
     }
 

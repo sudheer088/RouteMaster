@@ -7,13 +7,13 @@ import jakarta.persistence.*;
 public class Vehicle {
     @Id
     @GeneratedValue
-    private Long Vehicle_id;
+    private Long vehicle_id;
     @Column(nullable = false,unique = true)
     private String vehicleNumber;
     @Column(nullable = false)
     private int capacity;
     @Column(nullable = false)
-    private String DriverName;
+    private String driverName;
     @ManyToOne
     @JoinColumn(name="route_id")
     private Route route;
@@ -24,12 +24,12 @@ public class Vehicle {
     public Vehicle(String vehicleNumber, int capacity, String driverName, Route route) {
         this.vehicleNumber = vehicleNumber;
         this.capacity = capacity;
-         this.DriverName = driverName;
+         this.driverName = driverName;
         this.route = route;
     }
 
     public Long getVehicle_id() {
-        return Vehicle_id;
+        return vehicle_id;
     }
 
     public String getVehicleNumber() {
@@ -49,11 +49,11 @@ public class Vehicle {
     }
 
     public String getDriverName() {
-        return DriverName;
+        return driverName;
     }
 
     public void setDriverName(String driverName) {
-        DriverName = driverName;
+        driverName = driverName;
     }
 
     public Route getRoute() {

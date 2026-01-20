@@ -1,9 +1,10 @@
 package com.next.routeMaster.controller;
 
-import org.example.feemanagementsystem.domain.dto.auth.LoginRequest;
-import org.example.feemanagementsystem.domain.entity.User;
-import org.example.feemanagementsystem.repository.UserRepository;
-import org.example.feemanagementsystem.security.JwtUtil;
+
+import com.next.routeMaster.authDto.LoginRequest;
+import com.next.routeMaster.entity.User;
+import com.next.routeMaster.repository.UserRepo;
+import com.next.routeMaster.security.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserRepository userRepository;
+    private final UserRepo userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public AuthController(UserRepo userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
@@ -59,7 +60,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public String logout() {
-        //remove token at client
         return "logut successfull";
     }
 }

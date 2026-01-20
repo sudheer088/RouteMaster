@@ -16,9 +16,9 @@ public class RouteController {
     public Route createRoute(@RequestBody Route route){
         return routeService.createRoute(route);
     }
-    @PutMapping("/{routeId}/status")
+    @PatchMapping("/{routeId}/{status}")
     public Route updateStatus(@PathVariable Long routeId,
-                              @RequestParam String status){
+                              @PathVariable String status){
         return routeService.updatedStatus(routeId,status);
     }
     @GetMapping("/{routeId}/status")

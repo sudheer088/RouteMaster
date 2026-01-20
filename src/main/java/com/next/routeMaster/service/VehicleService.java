@@ -4,9 +4,10 @@ import com.next.routeMaster.entity.Route;
 import com.next.routeMaster.entity.Vehicle;
 import com.next.routeMaster.repository.RouteRepo;
 import com.next.routeMaster.repository.VehicleRepo;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class VehicleService {
     private VehicleRepo vehicleRepo;
     private RouteRepo routeRepo;
