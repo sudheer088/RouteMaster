@@ -27,13 +27,12 @@ public class JwtUtil {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
-        String token =  Jwts.builder()
+        return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigninKey())
                 .compact();
-    return token;
     }
 
     public String getUsernameFromToken(String token) {
@@ -47,12 +46,19 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
+            // Additional null/empty check
+            if (token == null || token.trim().isEmpty()) {
+                return false;
+            }
+
             Jwts.parserBuilder()
                     .setSigningKey(getSigninKey())
                     .build()
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            // You can log the error here if needed
+            // logger.error("JWT validation failed: " + e.getMessage());
             return false;
         }
     }

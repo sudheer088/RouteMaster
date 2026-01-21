@@ -1,8 +1,6 @@
 let token = null;
 
 window.onload = function () {
-  // Note: localStorage is not available in Claude artifacts
-  // Token will only persist during the current session
   updateUIState();
 };
 
@@ -52,8 +50,29 @@ async function login() {
 
     if (!response.ok) throw new Error("Login failed");
 
-    const data = await response.text();
-    token = data;
+    // FIXED: Try to parse as JSON first (if backend returns JSON with token field)
+    const contentType = response.headers.get("content-type");
+    let jwtToken;
+    
+    if (contentType && contentType.includes("application/json")) {
+      const data = await response.json();
+      // Assuming backend returns { token: "jwt_token_here" }
+      jwtToken = data.token || data.jwt || data;
+    } else {
+      // If backend returns plain text, get the token and trim whitespace
+      jwtToken = await response.text();
+      jwtToken = jwtToken.trim();
+      
+      // If the response contains "Bearer ", remove it
+      if (jwtToken.startsWith("Bearer ")) {
+        jwtToken = jwtToken.substring(7);
+      }
+    }
+    
+    // Store the clean token
+    token = jwtToken.trim();
+    
+    console.log("Token stored:", token); // Debug log
 
     document.getElementById("response").innerText = "Login Successful";
     document.getElementById("loginSection").style.display = "none";
@@ -63,7 +82,8 @@ async function login() {
 
     updateUIState();
   } catch (error) {
-    document.getElementById("response").innerText = error.message;
+    document.getElementById("response").innerText = "Login Error: " + error.message;
+    console.error("Login error:", error);
   }
 }
 
@@ -106,19 +126,27 @@ async function createStudent() {
     const grade = document.getElementById("createStudentGrade").value;
     const parent_number = document.getElementById("createStudentParentNumber").value;
 
+    console.log("Sending request with token:", token); // Debug log
+
     const response = await fetch("http://localhost:8080/students/add", {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + token,
+        "Authorization": `Bearer ${token}`,  // FIXED: Use template literal
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ name, grade, parent_number }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
     const data = await response.text();
     document.getElementById("createStudentResponse").innerText = data;
   } catch (error) {
-    document.getElementById("createStudentResponse").innerText = error.message;
+    document.getElementById("createStudentResponse").innerText = "Error: " + error.message;
+    console.error("Create student error:", error);
   }
 }
 
@@ -128,12 +156,17 @@ async function getAllStudents() {
 
     const response = await fetch("http://localhost:8080/students/all", {
       method: "GET",
-      headers: { Authorization: "Bearer " + token },
+      headers: { "Authorization": `Bearer ${token}` },  // FIXED: Use template literal
     });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
     const data = await response.json();
     document.getElementById("allStudentsResponse").innerText = JSON.stringify(data, null, 2);
   } catch (error) {
-    document.getElementById("allStudentsResponse").innerText = error.message;
+    document.getElementById("allStudentsResponse").innerText = "Error: " + error.message;
   }
 }
 
@@ -149,7 +182,7 @@ async function createRoute() {
     const response = await fetch("http://localhost:8080/routes/add", {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + token,
+        "Authorization": `Bearer ${token}`,  // FIXED
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ route_name, start, end, status }),
@@ -158,7 +191,7 @@ async function createRoute() {
     const data = await response.json();
     document.getElementById("createRouteResponse").innerText = JSON.stringify(data, null, 2);
   } catch (error) {
-    document.getElementById("createRouteResponse").innerText = error.message;
+    document.getElementById("createRouteResponse").innerText = "Error: " + error.message;
   }
 }
 
@@ -171,13 +204,13 @@ async function updateRouteStatus() {
 
     const response = await fetch(`http://localhost:8080/routes/${routeId}/${status}`, {
       method: "PATCH",
-      headers: { Authorization: "Bearer " + token },
+      headers: { "Authorization": `Bearer ${token}` },  // FIXED
     });
 
     const data = await response.json();
     document.getElementById("updateRouteResponse").innerText = JSON.stringify(data, null, 2);
   } catch (error) {
-    document.getElementById("updateRouteResponse").innerText = error.message;
+    document.getElementById("updateRouteResponse").innerText = "Error: " + error.message;
   }
 }
 
@@ -189,13 +222,13 @@ async function getRouteStatus() {
 
     const response = await fetch(`http://localhost:8080/routes/${routeId}/status`, {
       method: "GET",
-      headers: { Authorization: "Bearer " + token },
+      headers: { "Authorization": `Bearer ${token}` },  // FIXED
     });
 
     const data = await response.text();
     document.getElementById("routeStatusResponse").innerText = data;
   } catch (error) {
-    document.getElementById("routeStatusResponse").innerText = error.message;
+    document.getElementById("routeStatusResponse").innerText = "Error: " + error.message;
   }
 }
 
@@ -211,7 +244,7 @@ async function addVehicle() {
     const response = await fetch(`http://localhost:8080/vehicles/route/${routeId}`, {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + token,
+        "Authorization": `Bearer ${token}`,  // FIXED
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ vehicleNumber, capacity, driverName }),
@@ -220,7 +253,7 @@ async function addVehicle() {
     const data = await response.json();
     document.getElementById("addVehicleResponse").innerText = JSON.stringify(data, null, 2);
   } catch (error) {
-    document.getElementById("addVehicleResponse").innerText = error.message;
+    document.getElementById("addVehicleResponse").innerText = "Error: " + error.message;
   }
 }
 
@@ -232,13 +265,13 @@ async function getVehiclesByRoute() {
 
     const response = await fetch(`http://localhost:8080/vehicles/route/${routeId}`, {
       method: "GET",
-      headers: { Authorization: "Bearer " + token },
+      headers: { "Authorization": `Bearer ${token}` },  // FIXED
     });
 
     const data = await response.json();
     document.getElementById("vehiclesByRouteResponse").innerText = JSON.stringify(data, null, 2);
   } catch (error) {
-    document.getElementById("vehiclesByRouteResponse").innerText = error.message;
+    document.getElementById("vehiclesByRouteResponse").innerText = "Error: " + error.message;
   }
 }
 
@@ -251,13 +284,13 @@ async function assignStudent() {
 
     const response = await fetch(`http://localhost:8080/assignments/route/${routeId}/student/${studentId}`, {
       method: "POST",
-      headers: { Authorization: "Bearer " + token },
+      headers: { "Authorization": `Bearer ${token}` },  // FIXED
     });
 
     const data = await response.json();
     document.getElementById("assignStudentResponse").innerText = JSON.stringify(data, null, 2);
   } catch (error) {
-    document.getElementById("assignStudentResponse").innerText = error.message;
+    document.getElementById("assignStudentResponse").innerText = "Error: " + error.message;
   }
 }
 
@@ -269,12 +302,12 @@ async function getStudentsByRoute() {
 
     const response = await fetch(`http://localhost:8080/assignments/route/${routeId}`, {
       method: "GET",
-      headers: { Authorization: "Bearer " + token },
+      headers: { "Authorization": `Bearer ${token}` },  // FIXED
     });
 
     const data = await response.json();
     document.getElementById("studentsByRouteResponse").innerText = JSON.stringify(data, null, 2);
   } catch (error) {
-    document.getElementById("studentsByRouteResponse").innerText = error.message;
+    document.getElementById("studentsByRouteResponse").innerText = "Error: " + error.message;
   }
 }
