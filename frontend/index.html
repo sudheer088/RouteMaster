@@ -51,8 +51,9 @@
     <input type="text" id="createRouteStart" placeholder="Start Point">
     <input type="text" id="createRouteEnd" placeholder="End Point">
     <select id="createRouteStatus">
-        <option value="ACTIVE">ACTIVE</option>
-        <option value="INACTIVE">INACTIVE</option>
+        <option value="NotStarted">NotStarted</option>
+        <option value="In_route">started</option>
+        <option value ="Completed">completed</option>
     </select>
     <button onclick="createRoute()">Submit</button>
     <div id="createRouteResponse" class="response-box"></div>
@@ -62,8 +63,9 @@
 <div id="updateRouteStatusSection" class="content-section">
     <input type="number" id="updateRouteId" placeholder="Route ID">
     <select id="updateStatus">
-        <option value="ACTIVE">ACTIVE</option>
-        <option value="INACTIVE">INACTIVE</option>
+       <option value="NotStarted">NotStarted</option>
+        <option value="In_route">started</option>
+        <option value ="Completed">completed</option>
     </select>
     <button onclick="updateRouteStatus()">Update</button>
     <div id="updateRouteResponse" class="response-box"></div>

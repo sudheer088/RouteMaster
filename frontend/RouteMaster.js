@@ -48,31 +48,32 @@ async function login() {
       body: JSON.stringify({ username, password }),
     });
 
-    if (!response.ok) throw new Error("Login failed");
+    if (!response.ok) throw new Error("Login failed")
+    
 
-    // FIXED: Try to parse as JSON first (if backend returns JSON with token field)
+
     const contentType = response.headers.get("content-type");
     let jwtToken;
     
     if (contentType && contentType.includes("application/json")) {
       const data = await response.json();
-      // Assuming backend returns { token: "jwt_token_here" }
+
       jwtToken = data.token || data.jwt || data;
     } else {
-      // If backend returns plain text, get the token and trim whitespace
+
       jwtToken = await response.text();
       jwtToken = jwtToken.trim();
-      
-      // If the response contains "Bearer ", remove it
+
+
       if (jwtToken.startsWith("Bearer ")) {
         jwtToken = jwtToken.substring(7);
       }
     }
     
-    // Store the clean token
+    
     token = jwtToken.trim();
     
-    console.log("Token stored:", token); // Debug log
+    console.log("Token stored:", token);
 
     document.getElementById("response").innerText = "Login Successful";
     document.getElementById("loginSection").style.display = "none";
@@ -126,12 +127,12 @@ async function createStudent() {
     const grade = document.getElementById("createStudentGrade").value;
     const parent_number = document.getElementById("createStudentParentNumber").value;
 
-    console.log("Sending request with token:", token); // Debug log
+    console.log("Sending request with token:", token); 
 
     const response = await fetch("http://localhost:8080/students/add", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${token}`,  // FIXED: Use template literal
+        "Authorization": `Bearer ${token}`,  
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ name, grade, parent_number }),
@@ -156,7 +157,7 @@ async function getAllStudents() {
 
     const response = await fetch("http://localhost:8080/students/all", {
       method: "GET",
-      headers: { "Authorization": `Bearer ${token}` },  // FIXED: Use template literal
+      headers: { "Authorization": `Bearer ${token}` },  
     });
     
     if (!response.ok) {
@@ -182,7 +183,7 @@ async function createRoute() {
     const response = await fetch("http://localhost:8080/routes/add", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${token}`,  // FIXED
+        "Authorization": `Bearer ${token}`,  
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ route_name, start, end, status }),
@@ -204,7 +205,7 @@ async function updateRouteStatus() {
 
     const response = await fetch(`http://localhost:8080/routes/${routeId}/${status}`, {
       method: "PATCH",
-      headers: { "Authorization": `Bearer ${token}` },  // FIXED
+      headers: { "Authorization": `Bearer ${token}` },  
     });
 
     const data = await response.json();
@@ -222,7 +223,7 @@ async function getRouteStatus() {
 
     const response = await fetch(`http://localhost:8080/routes/${routeId}/status`, {
       method: "GET",
-      headers: { "Authorization": `Bearer ${token}` },  // FIXED
+      headers: { "Authorization": `Bearer ${token}` },  
     });
 
     const data = await response.text();

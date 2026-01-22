@@ -5,6 +5,8 @@ import com.next.routeMaster.authDto.LoginRequest;
 import com.next.routeMaster.entity.User;
 import com.next.routeMaster.repository.UserRepo;
 import com.next.routeMaster.security.JwtUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,8 +45,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest request) {
-
+    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -52,9 +53,16 @@ public class AuthController {
                             request.password()
                     )
             );
-            return jwtUtil.generateToken(request.username());
+
+            String token = jwtUtil.generateToken(request.username());
+
+
+            return ResponseEntity.ok(token);
+
         } catch (BadCredentialsException e) {
-            return "Invalid username or password";
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid username or password");
         }
     }
 
