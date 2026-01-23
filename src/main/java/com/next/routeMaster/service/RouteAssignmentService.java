@@ -1,5 +1,6 @@
 package com.next.routeMaster.service;
 
+import com.next.routeMaster.dto.StudentDto;
 import com.next.routeMaster.entity.Route;
 import com.next.routeMaster.entity.RouteAssignment;
 import com.next.routeMaster.entity.Student;
@@ -21,19 +22,31 @@ public class RouteAssignmentService {
         this.routeRepo = routeRepo;
         this.studentRepo = studentRepo;
     }
-    public RouteAssignment assignStudent(Long routeId,Long studentId){
-        if(routeAssaignRepo.existsByRouteIdAndStudentId(routeId,studentId)){
+
+    public RouteAssignment assignStudent(Long routeId, Long studentId) {
+        if (routeAssaignRepo.existsByRouteIdAndStudentId(routeId, studentId)) {
             throw new RuntimeException("student already assaigned to this route");
         }
-        Route route= routeRepo.findById(routeId).orElseThrow(()->new RuntimeException("route not found"));
-        Student student = studentRepo.findById(studentId).orElseThrow(()-> new RuntimeException("student not found"));
-        RouteAssignment assignment= new RouteAssignment();
+        Route route = routeRepo.findById(routeId).orElseThrow(() -> new RuntimeException("route not found"));
+        Student student = studentRepo.findById(studentId).orElseThrow(() -> new RuntimeException("student not found"));
+        RouteAssignment assignment = new RouteAssignment();
         assignment.setRoute(route);
         assignment.setStudent(student);
         return routeAssaignRepo.save(assignment);
     }
 
-    public List<RouteAssignment> getStudentsByRoute(Long routeId) {
-        return routeAssaignRepo.findByRouteId(routeId);
+    public List<StudentDto> getStudentsByRoute(Long routeId) {
+
+        List<RouteAssignment> list = routeAssaignRepo.findByRouteId(routeId);
+
+        return list.stream()
+                .map(ra -> new StudentDto(
+                        ra.getStudent().getId(),
+                        ra.getStudent().getName(),
+                        ra.getStudent().getGrade(),
+                        ra.getStudent().getParent_number()
+                ))
+                .toList();
     }
 }
+
