@@ -13,9 +13,9 @@ import java.util.List;
 
 @Service
 public class RouteAssignmentService {
-    private RouteAssaignRepo routeAssaignRepo;
-    private RouteRepo routeRepo;
-    private StudentRepo studentRepo;
+    private final RouteAssaignRepo routeAssaignRepo;
+    private final RouteRepo routeRepo;
+    private final StudentRepo studentRepo;
 
     public RouteAssignmentService(RouteAssaignRepo routeAssaignRepo, RouteRepo routeRepo, StudentRepo studentRepo) {
         this.routeAssaignRepo = routeAssaignRepo;

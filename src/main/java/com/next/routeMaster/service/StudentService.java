@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 @Service
 public class StudentService {
-    private StudentRepo studentRepo;
+    private final StudentRepo studentRepo;
     public StudentService(StudentRepo studentrepo){
 
         this.studentRepo= studentrepo;

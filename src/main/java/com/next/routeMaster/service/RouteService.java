@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RouteService {
-    private RouteRepo routeRepo;
+    private final RouteRepo routeRepo;
     public RouteService(RouteRepo routeRepo){
         this.routeRepo=routeRepo;
     }

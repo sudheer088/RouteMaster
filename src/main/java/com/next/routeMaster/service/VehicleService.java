@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 @Service
 public class VehicleService {
-    private VehicleRepo vehicleRepo;
-    private RouteRepo routeRepo;
+    private final VehicleRepo vehicleRepo;
+    private final RouteRepo routeRepo;
     public VehicleService(VehicleRepo vehicleRepo,RouteRepo routeRepo){
         this.vehicleRepo=vehicleRepo;
         this.routeRepo=routeRepo;
