@@ -245,7 +245,7 @@ async function addVehicle() {
     const response = await fetch(`http://localhost:8080/vehicles/route/${routeId}`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${token}`,  // FIXED
+        "Authorization": `Bearer ${token}`,  
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ vehicleNumber, capacity, driverName }),
@@ -266,7 +266,7 @@ async function getVehiclesByRoute() {
 
     const response = await fetch(`http://localhost:8080/vehicles/route/${routeId}`, {
       method: "GET",
-      headers: { "Authorization": `Bearer ${token}` },  // FIXED
+      headers: { "Authorization": `Bearer ${token}` },  
     });
 
     const data = await response.json();
@@ -285,7 +285,7 @@ async function assignStudent() {
 
     const response = await fetch(`http://localhost:8080/assignments/route/${routeId}/student/${studentId}`, {
       method: "POST",
-      headers: { "Authorization": `Bearer ${token}` },  // FIXED
+      headers: { "Authorization": `Bearer ${token}` }, 
     });
 
     const data = await response.json();
@@ -303,7 +303,7 @@ async function getStudentsByRoute() {
 
     const response = await fetch(`http://localhost:8080/assignments/route/${routeId}`, {
       method: "GET",
-      headers: { "Authorization": `Bearer ${token}` },  // FIXED
+      headers: { "Authorization": `Bearer ${token}` },  
     });
 
     const data = await response.json();
