@@ -6,309 +6,215 @@ window.onload = function () {
 
 function updateUIState() {
   const protectedBtns = document.querySelectorAll(".protected");
-
-  if (token) {
-    protectedBtns.forEach((btn) => (btn.style.display = "inline-block"));
-  } else {
-    protectedBtns.forEach((btn) => (btn.style.display = "none"));
-  }
+  protectedBtns.forEach((btn) =>
+    btn.style.display = token ? "inline-block" : "none"
+  );
 }
 
 function toggle(id) {
-  const x = document.getElementById(id);
   document.querySelectorAll(".content-section").forEach((div) => {
     if (div.id !== id) div.style.display = "none";
   });
+  const x = document.getElementById(id);
   x.style.display = x.style.display === "none" ? "block" : "none";
 }
 
-async function register() {
-  try {
-    const username = document.getElementById("regUsername").value;
-    const password = document.getElementById("regPassword").value;
-    const response = await fetch("http://localhost:8080/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    const data = await response.text();
-    document.getElementById("response").innerText = data;
-  } catch (error) {
-    document.getElementById("response").innerText = error.message;
+// helper to format JSON to key:value readable
+function formatObject(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map((item, i) => `#${i + 1}\n${formatObject(item)}`).join("\n\n");
   }
+  return Object.entries(obj)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join("\n");
+}
+
+// auth
+async function register() {
+  const username = document.getElementById("regUsername").value;
+  const password = document.getElementById("regPassword").value;
+
+  const res = await fetch("http://localhost:8080/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+
+  document.getElementById("response").innerText = await res.text();
 }
 
 async function login() {
   try {
     const username = document.getElementById("loginUsername").value;
     const password = document.getElementById("loginPassword").value;
-    const response = await fetch("http://localhost:8080/auth/login", {
+
+    const res = await fetch("http://localhost:8080/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
     });
 
-    if (!response.ok) throw new Error("Login failed")
-    
+    let contentType = res.headers.get("content-type");
+    let jwt;
 
-
-    const contentType = response.headers.get("content-type");
-    let jwtToken;
-    
-    if (contentType && contentType.includes("application/json")) {
-      const data = await response.json();
-
-      jwtToken = data.token || data.jwt || data;
+    if (contentType?.includes("json")) {
+      const data = await res.json();
+      jwt = data.token || data.jwt || data;
     } else {
-
-      jwtToken = await response.text();
-      jwtToken = jwtToken.trim();
-
-
-      if (jwtToken.startsWith("Bearer ")) {
-        jwtToken = jwtToken.substring(7);
-      }
+      jwt = (await res.text()).trim();
+      if (jwt.startsWith("Bearer ")) jwt = jwt.substring(7);
     }
-    
-    
-    token = jwtToken.trim();
-    
-    console.log("Token stored:", token);
 
+    token = jwt.trim();
     document.getElementById("response").innerText = "Login Successful";
-    document.getElementById("loginSection").style.display = "none";
-
-    document.getElementById("loginUsername").value = "";
-    document.getElementById("loginPassword").value = "";
-
     updateUIState();
-  } catch (error) {
-    document.getElementById("response").innerText = "Login Error: " + error.message;
-    console.error("Login error:", error);
+  } catch (e) {
+    document.getElementById("response").innerText = e.message;
   }
 }
 
 function logout() {
   token = null;
-
-  document.querySelectorAll("input").forEach((input) => (input.value = ""));
-
-  const responseIds = [
-    "response",
-    "createStudentResponse",
-    "allStudentsResponse",
-    "createRouteResponse",
-    "updateRouteResponse",
-    "routeStatusResponse",
-    "addVehicleResponse",
-    "vehiclesByRouteResponse",
-    "assignStudentResponse",
-    "studentsByRouteResponse",
-  ];
-  responseIds.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.innerText = "";
-  });
-
-  document
-    .querySelectorAll(".content-section")
-    .forEach((el) => (el.style.display = "none"));
-
+  document.querySelectorAll("input").forEach((i) => (i.value = ""));
+  document.querySelectorAll(".response-box").forEach((b) => (b.innerText = ""));
+  document.querySelectorAll(".content-section").forEach((el) => (el.style.display = "none"));
   updateUIState();
-
   alert("Logged out");
 }
 
+// create student
 async function createStudent() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  const name = document.getElementById("createStudentName").value;
+  const grade = document.getElementById("createStudentGrade").value;
+  const parent_number = document.getElementById("createStudentParentNumber").value;
 
-    const name = document.getElementById("createStudentName").value;
-    const grade = document.getElementById("createStudentGrade").value;
-    const parent_number = document.getElementById("createStudentParentNumber").value;
+  const res = await fetch("http://localhost:8080/students/add", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ name, grade, parent_number }),
+  });
 
-    console.log("Sending request with token:", token); 
-
-    const response = await fetch("http://localhost:8080/students/add", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,  
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, grade, parent_number }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-
-    const data = await response.text();
-    document.getElementById("createStudentResponse").innerText = data;
-  } catch (error) {
-    document.getElementById("createStudentResponse").innerText = "Error: " + error.message;
-    console.error("Create student error:", error);
-  }
+  document.getElementById("createStudentResponse").innerText = await res.text();
 }
 
 async function getAllStudents() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  const res = await fetch("http://localhost:8080/students/all", {
+    method: "GET",
+    headers: { "Authorization": `Bearer ${token}` },
+  });
 
-    const response = await fetch("http://localhost:8080/students/all", {
-      method: "GET",
-      headers: { "Authorization": `Bearer ${token}` },  
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    
-    const data = await response.json();
-    document.getElementById("allStudentsResponse").innerText = JSON.stringify(data, null, 2);
-  } catch (error) {
-    document.getElementById("allStudentsResponse").innerText = "Error: " + error.message;
-  }
+  const data = await res.json();
+  document.getElementById("allStudentsResponse").innerText = formatObject(data);
 }
 
+// routes
 async function createRoute() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  const route_name = document.getElementById("createRouteName").value;
+  const start = document.getElementById("createRouteStart").value;
+  const end = document.getElementById("createRouteEnd").value;
+  const status = document.getElementById("createRouteStatus").value;
 
-    const route_name = document.getElementById("createRouteName").value;
-    const start = document.getElementById("createRouteStart").value;
-    const end = document.getElementById("createRouteEnd").value;
-    const status = document.getElementById("createRouteStatus").value;
+  const res = await fetch("http://localhost:8080/routes/add", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ route_name, start, end, status }),
+  });
 
-    const response = await fetch("http://localhost:8080/routes/add", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,  
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ route_name, start, end, status }),
-    });
-
-    const data = await response.json();
-    document.getElementById("createRouteResponse").innerText = JSON.stringify(data, null, 2);
-  } catch (error) {
-    document.getElementById("createRouteResponse").innerText = "Error: " + error.message;
-  }
+  document.getElementById("createRouteResponse").innerText = formatObject(await res.json());
 }
 
 async function updateRouteStatus() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  const id = document.getElementById("updateRouteId").value;
+  const status = document.getElementById("updateStatus").value;
 
-    const routeId = document.getElementById("updateRouteId").value;
-    const status = document.getElementById("updateStatus").value;
+  const res = await fetch(`http://localhost:8080/routes/${id}/${status}`, {
+    method: "PATCH",
+    headers: { "Authorization": `Bearer ${token}` },
+  });
 
-    const response = await fetch(`http://localhost:8080/routes/${routeId}/${status}`, {
-      method: "PATCH",
-      headers: { "Authorization": `Bearer ${token}` },  
-    });
-
-    const data = await response.json();
-    document.getElementById("updateRouteResponse").innerText = JSON.stringify(data, null, 2);
-  } catch (error) {
-    document.getElementById("updateRouteResponse").innerText = "Error: " + error.message;
-  }
+  document.getElementById("updateRouteResponse").innerText = formatObject(await res.json());
 }
 
 async function getRouteStatus() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  const id = document.getElementById("getStatusRouteId").value;
 
-    const routeId = document.getElementById("getStatusRouteId").value;
+  const res = await fetch(`http://localhost:8080/routes/${id}/status`, {
+    method: "GET",
+    headers: { "Authorization": `Bearer ${token}` },
+  });
 
-    const response = await fetch(`http://localhost:8080/routes/${routeId}/status`, {
-      method: "GET",
-      headers: { "Authorization": `Bearer ${token}` },  
-    });
-
-    const data = await response.text();
-    document.getElementById("routeStatusResponse").innerText = data;
-  } catch (error) {
-    document.getElementById("routeStatusResponse").innerText = "Error: " + error.message;
-  }
+  document.getElementById("routeStatusResponse").innerText = await res.text();
 }
 
+// vehicles
 async function addVehicle() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  const vehicleNumber = document.getElementById("vehicleNumber").value;
+  const capacity = document.getElementById("vehicleCapacity").value;
+  const driverName = document.getElementById("vehicleDriverName").value;
+  const routeId = document.getElementById("vehicleRouteId").value;
 
-    const vehicleNumber = document.getElementById("vehicleNumber").value;
-    const capacity = parseInt(document.getElementById("vehicleCapacity").value);
-    const driverName = document.getElementById("vehicleDriverName").value;
-    const routeId = document.getElementById("vehicleRouteId").value;
+  const res = await fetch(`http://localhost:8080/vehicles/route/${routeId}`, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ vehicleNumber, capacity, driverName }),
+  });
 
-    const response = await fetch(`http://localhost:8080/vehicles/route/${routeId}`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,  
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ vehicleNumber, capacity, driverName }),
-    });
-
-    const data = await response.json();
-    document.getElementById("addVehicleResponse").innerText = JSON.stringify(data, null, 2);
-  } catch (error) {
-    document.getElementById("addVehicleResponse").innerText = "Error: " + error.message;
-  }
+  document.getElementById("addVehicleResponse").innerText = formatObject(await res.json());
 }
 
 async function getVehiclesByRoute() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  const routeId = document.getElementById("vehiclesRouteId").value;
 
-    const routeId = document.getElementById("vehiclesRouteId").value;
+  const res = await fetch(`http://localhost:8080/vehicles/route/${routeId}`, {
+    method: "GET",
+    headers: { "Authorization": `Bearer ${token}` },
+  });
 
-    const response = await fetch(`http://localhost:8080/vehicles/route/${routeId}`, {
-      method: "GET",
-      headers: { "Authorization": `Bearer ${token}` },  
-    });
-
-    const data = await response.json();
-    document.getElementById("vehiclesByRouteResponse").innerText = JSON.stringify(data, null, 2);
-  } catch (error) {
-    document.getElementById("vehiclesByRouteResponse").innerText = "Error: " + error.message;
-  }
+  document.getElementById("vehiclesByRouteResponse").innerText = formatObject(await res.json());
 }
 
+// NEW — Get all vehicles
+async function getAllVehicles() {
+  const res = await fetch("http://localhost:8080/vehicles/all", {
+    method: "GET",
+    headers: { "Authorization": `Bearer ${token}` },
+  });
+
+  document.getElementById("allVehiclesResponse").innerText = formatObject(await res.json());
+}
+
+// NEW — Get vehicle by ID
+async function getVehicleById() {
+  const id = document.getElementById("vehicleByIdInput").value;
+
+  const res = await fetch(`http://localhost:8080/vehicles/vehicleId/${id}`, {
+    method: "GET",
+    headers: { "Authorization": `Bearer ${token}` },
+  });
+
+  document.getElementById("vehicleByIdResponse").innerText = formatObject(await res.json());
+}
+
+// assignments
 async function assignStudent() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  const routeId = document.getElementById("assignRouteId").value;
+  const studentId = document.getElementById("assignStudentId").value;
 
-    const routeId = document.getElementById("assignRouteId").value;
-    const studentId = document.getElementById("assignStudentId").value;
+  const res = await fetch(`http://localhost:8080/assignments/route/${routeId}/student/${studentId}`, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${token}` },
+  });
 
-    const response = await fetch(`http://localhost:8080/assignments/route/${routeId}/student/${studentId}`, {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${token}` }, 
-    });
-
-    const data = await response.json();
-    document.getElementById("assignStudentResponse").innerText = JSON.stringify(data, null, 2);
-  } catch (error) {
-    document.getElementById("assignStudentResponse").innerText = "Error: " + error.message;
-  }
+  document.getElementById("assignStudentResponse").innerText = formatObject(await res.json());
 }
 
 async function getStudentsByRoute() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  const routeId = document.getElementById("studentsRouteId").value;
 
-    const routeId = document.getElementById("studentsRouteId").value;
+  const res = await fetch(`http://localhost:8080/assignments/route/${routeId}`, {
+    method: "GET",
+    headers: { "Authorization": `Bearer ${token}` },
+  });
 
-    const response = await fetch(`http://localhost:8080/assignments/route/${routeId}`, {
-      method: "GET",
-      headers: { "Authorization": `Bearer ${token}` },  
-    });
-
-    const data = await response.json();
-    document.getElementById("studentsByRouteResponse").innerText = JSON.stringify(data, null, 2);
-  } catch (error) {
-    document.getElementById("studentsByRouteResponse").innerText = "Error: " + error.message;
-  }
+  document.getElementById("studentsByRouteResponse").innerText = formatObject(await res.json());
 }

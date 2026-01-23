@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>RouteMaster</title>
-<link rel="stylesheet" href="RouteMaster.css">
+    <title>RouteMaster</title>
+    <link rel="stylesheet" href="RouteMaster.css">
 </head>
 <body>
 
@@ -53,7 +53,7 @@
     <select id="createRouteStatus">
         <option value="NotStarted">NotStarted</option>
         <option value="In_route">started</option>
-        <option value ="Completed">completed</option>
+        <option value="Completed">completed</option>
     </select>
     <button onclick="createRoute()">Submit</button>
     <div id="createRouteResponse" class="response-box"></div>
@@ -63,9 +63,9 @@
 <div id="updateRouteStatusSection" class="content-section">
     <input type="number" id="updateRouteId" placeholder="Route ID">
     <select id="updateStatus">
-       <option value="NotStarted">NotStarted</option>
+        <option value="NotStarted">NotStarted</option>
         <option value="In_route">started</option>
-        <option value ="Completed">completed</option>
+        <option value="Completed">completed</option>
     </select>
     <button onclick="updateRouteStatus()">Update</button>
     <div id="updateRouteResponse" class="response-box"></div>
@@ -93,6 +93,21 @@
     <input type="number" id="vehiclesRouteId" placeholder="Route ID">
     <button onclick="getVehiclesByRoute()">Get Vehicles</button>
     <div id="vehiclesByRouteResponse" class="response-box"></div>
+</div>
+
+<!-- NEW SECTION: Get All Vehicles -->
+<button class="toggle-btn protected" onclick="toggle('getAllVehiclesSection')">Get All Vehicles</button>
+<div id="getAllVehiclesSection" class="content-section">
+    <button onclick="getAllVehicles()">Fetch Vehicles</button>
+    <div id="allVehiclesResponse" class="response-box"></div>
+</div>
+
+<!-- NEW SECTION: Get Vehicle By ID -->
+<button class="toggle-btn protected" onclick="toggle('getVehicleByIdSection')">Get Vehicle By ID</button>
+<div id="getVehicleByIdSection" class="content-section">
+    <input type="number" id="vehicleByIdInput" placeholder="Vehicle ID">
+    <button onclick="getVehicleById()">Get Vehicle</button>
+    <div id="vehicleByIdResponse" class="response-box"></div>
 </div>
 
 <button class="toggle-btn protected" onclick="toggle('assignStudentSection')">Assign Student to Route</button>

@@ -2,6 +2,7 @@ package com.next.routeMaster.controller;
 
 import com.next.routeMaster.entity.Route;
 import com.next.routeMaster.service.RouteService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,12 +18,22 @@ public class RouteController {
         return routeService.createRoute(route);
     }
     @PatchMapping("/{routeId}/{status}")
-    public Route updateStatus(@PathVariable Long routeId,
+    public ResponseEntity<?> updateStatus(@PathVariable Long routeId,
                               @PathVariable String status){
-        return routeService.updatedStatus(routeId,status);
+        try{
+            return ResponseEntity.ok(routeService.updatedStatus(routeId,status));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+
+        }
     }
     @GetMapping("/{routeId}/status")
-    public String getStatus(@PathVariable Long routeId){
-        return routeService.getStatus(routeId);
+    public ResponseEntity<String> getStatus(@PathVariable Long routeId){
+        try{
+
+            return ResponseEntity.ok(routeService.getStatus(routeId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 }
